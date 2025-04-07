@@ -1,11 +1,9 @@
 function scoreGuess(guess, actual) {
-  const diff = Math.abs(guess - actual);
-  if (diff === 0) return 100;
-  if (diff <= 5) return 90;
-  if (diff <= 20) return 75;
-  if (diff <= 50) return 50;
-  if (diff <= 100) return 25;
-  return 0;
+  ratio =
+    Math.abs(Number.parseFloat(guess) - Number.parseFloat(actual)) /
+    Number.parseFloat(actual);
+  if (ratio >= 1) return 0;
+  return ((1.0 - ratio) * 1000).toFixed(0);
 }
 
 const attempts = 5;
@@ -14,6 +12,8 @@ let currentRound = 0;
 let totalScore = 0;
 let itemPrice = 0.0;
 let guess = 0.0;
+let score = 0;
+let rawInput = "";
 
 const scoreBoard = document.getElementById("score");
 const container = document.getElementById("container");
@@ -24,11 +24,14 @@ function showNewItem() {
     .then((product) => {
       itemPrice = product.precio;
       container.innerHTML = `
-          <img src="${product.imagen}" alt="${product.nombre}" width="150" />
+        <div class="row" id = "productContainer">
+          <img src="${product.imagen}" alt="${product.nombre}" />
+          <div class="name-price">
           <h2>${product.nombre}</h2>
-          <input type="number" id="guess-input" placeholder="Enter your guess" />
-          <button id="submit-btn">Submit Guess</button>
-        
+          <input type="text" id="guessInput" readonly style="text-align: right;"/>
+          <button id="submit-btn">Confirmar</button>
+          <div>
+        </div>
       `;
       document.getElementById("submit-btn").addEventListener("click", () => {
         makeGuess();
@@ -39,6 +42,25 @@ function showNewItem() {
         }
         showResult();
       });
+      document
+        .getElementById("guessInput")
+        .addEventListener("keydown", (event) => {
+          if (event.key >= "0" && event.key <= "9") {
+            event.preventDefault();
+            rawInput += event.key;
+            updateFormattedValue();
+          } else if (event.key === "Backspace") {
+            event.preventDefault();
+            rawInput = rawInput.slice(0, -1);
+            updateFormattedValue();
+          }
+        });
+
+      function updateFormattedValue() {
+        let num = parseFloat(rawInput) || 0;
+        let formatted = (num / 100).toFixed(2); // force 2 decimal places
+        document.getElementById("guessInput").value = formatted + " €";
+      }
     })
     .catch((err) => {
       console.error("Error fetching product:", err);
@@ -46,16 +68,19 @@ function showNewItem() {
 }
 
 function showResult() {
-    container.innerHTML = `
+  container.innerHTML = `
         <p>Has adivinado:\t${Number.parseFloat(guess).toFixed(2)} €</p>
         <p>Precio real:\t${Number.parseFloat(itemPrice).toFixed(2)} €</p>
-    `
-    setTimeout(()=> showNewItem(), "5000");
+        <p>Has ganado ${score} puntos</p>
+    `;
+  setTimeout(() => showNewItem(), "5000");
 }
 
 function makeGuess() {
-  guess = parseFloat(document.getElementById("guess-input").value);
-  totalScore += scoreGuess(guess, itemPrice);
+  guess = parseFloat(document.getElementById("guessInput").value);
+  score = scoreGuess(guess, itemPrice);
+  rawInput = "";
+  totalScore = Number(totalScore) + Number(score);
   updateScore();
 }
 
@@ -70,9 +95,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function showFinalScore() {
   container.innerHTML = `
-      <h2>Game Over!</h2>
-      <p>Your score: ${totalScore}</p>
-      <button id="restartBtn">Play Again</button>
+      <h2>Fin del juego!</h2>
+      <p>Tu puntaje: ${totalScore}</p>
+      <button id="restartBtn">Jugar otra vez</button>
     `;
 
   document.getElementById("restartBtn").addEventListener("click", () => {
