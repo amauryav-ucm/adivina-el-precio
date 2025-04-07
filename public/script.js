@@ -28,7 +28,7 @@ function showNewItem() {
           <img src="${product.imagen}" alt="${product.nombre}" />
           <div class="name-price">
           <h2>${product.nombre}</h2>
-          <input type="text" id="guessInput" style="text-align: right;"/>
+          <input type="number" step="0.01" min="0" id="guessInput" style="text-align: right;"/>
           <button id="submit-btn">Confirmar</button>
           <div>
         </div>
