@@ -16,15 +16,46 @@ const items = [
     return 0;
   }
   
-  // For now, simulate guesses
-  const guesses = [950, 200, 600, 550, 800];
-  
+  let currentIndex = 0;
   let totalScore = 0;
-  for (let i = 0; i < items.length; i++) {
-    const score = scoreGuess(guesses[i], items[i].actualPrice);
-    console.log(`Guessed $${guesses[i]} for ${items[i].name} — Scored: ${score}`);
-    totalScore += score;
+  
+  const itemNameEl = document.getElementById('item-name');
+  const guessInput = document.getElementById('guess-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const feedbackEl = document.getElementById('feedback');
+  const finalScoreEl = document.getElementById('final-score');
+  
+  function showItem() {
+    const item = items[currentIndex];
+    itemNameEl.textContent = `Item ${currentIndex + 1}: ${item.name}`;
+    guessInput.value = '';
+    feedbackEl.textContent = '';
   }
   
-  console.log(`Total Score: ${totalScore} / 500`);
+  submitBtn.addEventListener('click', () => {
+    const guess = parseInt(guessInput.value);
+    if (isNaN(guess)) {
+      feedbackEl.textContent = 'Please enter a number!';
+      return;
+    }
+  
+    const item = items[currentIndex];
+    const score = scoreGuess(guess, item.actualPrice);
+    totalScore += score;
+  
+    feedbackEl.textContent = `You guessed $${guess}. Actual price: $${item.actualPrice}. You scored ${score} points.`;
+  
+    currentIndex++;
+    if (currentIndex < items.length) {
+      setTimeout(() => {
+        showItem();
+      }, 1500);
+    } else {
+      submitBtn.disabled = true;
+      guessInput.disabled = true;
+      finalScoreEl.textContent = `🏁 Game over! Your total score: ${totalScore} / ${items.length * 100}`;
+    }
+  });
+  
+  showItem();
   
