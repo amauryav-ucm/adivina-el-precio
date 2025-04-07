@@ -28,7 +28,7 @@ function showNewItem() {
           <img src="${product.imagen}" alt="${product.nombre}" />
           <div class="name-price">
           <h2>${product.nombre}</h2>
-          <input type="text" id="guessInput" readonly style="text-align: right;"/>
+          <input type="text" id="guessInput" style="text-align: right;"/>
           <button id="submit-btn">Confirmar</button>
           <div>
         </div>
@@ -42,24 +42,32 @@ function showNewItem() {
         }
         showResult();
       });
-      document
-        .getElementById("guessInput")
-        .addEventListener("keydown", (event) => {
-          if (event.key >= "0" && event.key <= "9") {
-            event.preventDefault();
-            rawInput += event.key;
-            updateFormattedValue();
-          } else if (event.key === "Backspace") {
-            event.preventDefault();
-            rawInput = rawInput.slice(0, -1);
-            updateFormattedValue();
-          }
-        });
+      const inputField = document.getElementById("guessInput");
 
+      // Handle keydown events
+      inputField.addEventListener("keydown", (event) => {
+        // Only allow digits (0-9) and the decimal point (.)
+        if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
+          event.preventDefault();
+          // Allow only one decimal point in the input
+          if (event.key === "." && !rawInput.includes(".")) {
+            rawInput += ".";
+          } else if (event.key >= "0" && event.key <= "9") {
+            rawInput += event.key;
+          }
+          updateFormattedValue();
+        } else if (event.key === "Backspace") {
+          event.preventDefault();
+          rawInput = rawInput.slice(0, -1);
+          updateFormattedValue();
+        }
+      });
+
+      // Update the input field with formatted value
       function updateFormattedValue() {
         let num = parseFloat(rawInput) || 0;
         let formatted = (num / 100).toFixed(2); // force 2 decimal places
-        document.getElementById("guessInput").value = formatted + " €";
+        inputField.value = formatted;
       }
     })
     .catch((err) => {
