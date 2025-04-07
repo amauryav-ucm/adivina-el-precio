@@ -1,0 +1,238 @@
+:root {
+  /*  Primary */
+  --orange: hsl(26, 100%, 55%);
+  --pale-orange: hsl(25, 100%, 94%);
+
+  /* Neutral */
+
+  --very-dark-blue: hsl(220, 13%, 13%);
+  --dark-grayish-blue: hsl(219, 9%, 45%);
+  --grayish-blue: hsl(220, 14%, 75%);
+  --light-grayish-blue: hsl(223, 64%, 98%);
+  --white: hsl(0, 0%, 100%);
+  /* with 75% opacity for lightbox background */
+  --black: hsl(0, 0%, 0%);
+
+  /* Pseudo element txt */
+  --pseudo-text: "0";
+}
+
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Kumbh Sans", sans-serif;
+  position: relative;
+}
+
+.body-wrapper {
+  position: absolute;
+  z-index: 50;
+}
+
+
+.item {
+    padding: 0 3rem;
+    max-width: 134rem;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 0.8fr 1fr;
+    gap: 10rem;
+  }
+  
+  /* Left img container stylling */
+  .img-main {
+    max-width: 100%;
+    border-radius: 5%;
+    cursor: pointer;
+    margin-bottom: 3.5rem;
+  }
+  
+  .img-main__btn {
+    display: none;
+  }
+  
+  .img-btns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  
+  .img-btn {
+    display: block;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-radius: 10%;
+    transition: all 0.3s;
+    position: relative;
+  }
+  
+  .img-btn::after {
+    content: "";
+    max-width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    border-radius: 10%;
+    border: 3px solid transparent;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+  }
+  .img-btn:hover {
+    background-color: var(--orange);
+  }
+  
+  .img-btn:hover::after {
+    border: 3px solid var(--orange);
+    opacity: 0.5;
+  }
+  
+  .img-btn__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10%;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    transform-origin: bottom;
+  }
+  
+  /*Right item details stylling */
+  .price {
+    margin-top: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .price-sub__heading {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--orange);
+  }
+  
+  .price-main__heading {
+    font-size: 5rem;
+    font-weight: 700;
+  }
+  
+  .price-txt {
+    margin-top: 2rem;
+    font-size: 1.8rem;
+    color: var(--dark-grayish-blue);
+    line-height: 1.5;
+  }
+  
+  .price-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  
+  .price-box__main {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .price-box__main-new {
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+  
+  .price-box__main-discount {
+    border: none;
+    padding: 0.5rem 1.25rem;
+    background-color: var(--pale-orange);
+    border-radius: 0.5rem;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--orange);
+  }
+  
+  .price-box__old {
+    font-size: 1.5rem;
+    color: var(--grayish-blue);
+    position: relative;
+  }
+  
+  .price-box__old::after {
+    content: "";
+    height: 1px;
+    width: 9%;
+    background-color: var(--grayish-blue);
+    position: absolute;
+    left: 0;
+    top: 50%;
+  }
+  
+  .price-btnbox {
+    margin-top: 2rem;
+  }
+  
+  .price-btnbox {
+    display: flex;
+    gap: 2.5rem;
+  }
+  
+  .price-btns {
+    width: 30%;
+    padding: 1.5rem 1.25rem;
+    border: none;
+    background-color: var(--light-grayish-blue);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3.5rem;
+  }
+  
+  .price-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    height: 100%;
+  }
+  
+  .price-btn__txt {
+    font-size: 1.7rem;
+    font-weight: 700;
+  }
+  
+  .price-cart__btn {
+    width: 50%;
+    box-shadow: 0px 10px 25px 3px rgba(255, 125, 26, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  /* Attribution */
+  .attribution {
+    margin-top: 7rem;
+    font-size: 11px;
+    text-align: center;
+  }
+  .attribution a {
+    color: hsl(228, 45%, 44%);
+  }
+  
