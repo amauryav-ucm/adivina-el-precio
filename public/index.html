@@ -5,9 +5,16 @@
 
     </head>
     <body>
-        <button onclick="createLobby()">Crear Lobby</button>
-        <script src="script.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+        <header>
+            <h1>Adivina el precio</h1>
+        </header>
+        <main id="main-content">
+            <button id="create-lobby-button">Crear Lobby</button>
+            <button id="join-lobby-button">Unirse a un Lobby</button>
+        </main>
+        
+        <script src="https://cdn.socket.io/4.8.1/socket.io.js"></script>
+        <script defer src="script.js"></script>
       </body>
 
 </html>

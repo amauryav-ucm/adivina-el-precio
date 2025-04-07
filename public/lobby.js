@@ -1,15 +1,15 @@
+const socket = io('https://test-9p0r.onrender.com');    
+
 document.getElementById('start-game-button').addEventListener("click", startGame);
 
 function startGame(){
-    
+    console.log('Match started');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const lobbyId = new URLSearchParams(window.location.search).get('lobby');
-    document.getElementById('lobby-code').value='ID del Lobby: ${lobbyId}';
-    const socket = io('https://test-9p0r.onrender.com');    
+    const lobbyCode = new URLSearchParams(window.location.search).get('lobby');
+    document.getElementById('lobby-code').textContent=`ID del Lobby: ${lobbyCode}`; 
     
-    const playerName = prompt("Introduce tu nombre:");
 
 })
 
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
+/*
 
 
 
@@ -136,28 +136,6 @@ function scoreGuess(guess, actual) {
     });
   }
   
-  async function pollLobbyState(lobbyId) {
-    const res = await fetch(`https://test-9p0r.onrender.com/api/lobby/${lobbyId}`);
-    const data = await res.json();
   
-    if (data.started) {
-      // Redirect to game page or start the game
-    } else {
-      // Update player list in the UI
-      document.getElementById("playerList").innerHTML = data.players
-        .map((p) => `<li>${p}</li>`)
-        .join("");
-    }
-  }
-  
-  // Poll every 2 seconds
-  setInterval(() => {
-    const lobbyId = new URLSearchParams(window.location.search).get("lobby");
-    pollLobbyState(lobbyId);
-  }, 2000);
-  
-  async function startGame(lobbyId) {
-    await fetch(`https://test-9p0r.onrender.com/api/lobby/${lobbyId}/start`, { method: "POST" });
-  }
-  
+  */
   
