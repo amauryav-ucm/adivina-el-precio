@@ -1,11 +1,3 @@
-const items = [
-    { name: "iPhone 14", actualPrice: 999 },
-    { name: "AirPods Pro", actualPrice: 249 },
-    { name: "Samsung TV", actualPrice: 549 },
-    { name: "PlayStation 5", actualPrice: 499 },
-    { name: "LEGO Millennium Falcon", actualPrice: 849 },
-  ];
-  
   function scoreGuess(guess, actual) {
     const diff = Math.abs(guess - actual);
     if (diff === 0) return 100;
@@ -25,9 +17,8 @@ const items = [
   const feedbackEl = document.getElementById('feedback');
   const finalScoreEl = document.getElementById('final-score');
   
-  function showItem() {
-    const item = items[currentIndex];
-    itemNameEl.textContent = `Item ${currentIndex + 1}: ${item.name}`;
+  function showItem(item) {
+    itemNameEl.textContent = `Item ${currentIndex + 1}: ${item.nombre}`;
     guessInput.value = '';
     feedbackEl.textContent = '';
   }
@@ -48,7 +39,9 @@ const items = [
     currentIndex++;
     if (currentIndex < items.length) {
       setTimeout(() => {
-        showItem();
+        fetch('https://test-9p0r.onrender.com/api/random-product')
+        .then(res => res.json())
+        .then(item => showItem(item));
       }, 1500);
     } else {
       submitBtn.disabled = true;
