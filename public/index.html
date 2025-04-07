@@ -7,7 +7,7 @@
         <h1>Hello from the frontend</h1>
         <p id="backend-msg">Loading message from server...</p>
         <script>
-            fetch()
+            fetch('https://test-9p0r.onrender.com/api/hello')
             .then(res => res.json())
             .then(data => {
                 document.getElementById('backend-msg').textContent = data.message;
