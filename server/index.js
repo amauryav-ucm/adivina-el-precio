@@ -22,6 +22,8 @@ app.listen(PORT, () => {
 });
 
 
+let products = [];
+
 // Read the CSV and load products into the array
 fs.createReadStream('products.csv')
   .pipe(csv())
