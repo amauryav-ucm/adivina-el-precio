@@ -42,14 +42,14 @@ app.get("/api/random-product", (req, res) => {
 
 let lobbies = {};
 
-socket.on('create-lobby', (data) => {
+io.on('create-lobby', (data) => {
   const lobbyId = Math.random().toString(36).substring(2, 8).toUpperCase();
   lobbies[lobbyId] = {
     players: [socket.id],
     started: false,
   };
 
-  socket.emit('lobby-created', {lobbyId});
+  io.emit('lobby-created', {lobbyId});
 })
 
 app.post("/api/lobby/create", (req, res) => {
