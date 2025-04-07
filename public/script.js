@@ -1,7 +1,7 @@
 const socket = io('https://test-9p0r.onrender.com'); 
 
 document.getElementById("create-lobby-button").addEventListener("click", () => {
-    console.log(`Conectado con id: ${socket.id}`);
+    socket.emit('message', {mensaje: "HOLA"});
 });
 
 socket.on("connect", () => {
