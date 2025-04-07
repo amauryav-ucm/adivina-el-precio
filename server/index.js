@@ -1,3 +1,6 @@
+const fs = require('fs');
+const csv = require('csv-parser');
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -17,10 +20,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
-
-
-
 
 
 // Read the CSV and load products into the array
