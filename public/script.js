@@ -116,3 +116,52 @@ function showFinalScore() {
     showNewItem();
   });
 }
+
+async function createLobby() {
+    const res = await fetch('/api/lobby/create', { method: 'POST' });
+    const data = await res.json();
+    const lobbyId = data.lobbyId;
+    // Save lobbyId, maybe go to /lobby.html?lobby=XYZ
+    window.location.href = `/lobby.html?lobby=${lobbyId}`;
+  }
+
+  async function joinLobby(lobbyId, playerName) {
+    const res = await fetch(`/api/lobby/${lobbyId}/join`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: playerName })
+    });
+    const data = await res.json();
+  
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
+  
+    // Save name and lobbyId in localStorage or a global var
+  }
+  
+  async function pollLobbyState(lobbyId) {
+    const res = await fetch(`/api/lobby/${lobbyId}`);
+    const data = await res.json();
+  
+    if (data.started) {
+      // Redirect to game page or start the game
+    } else {
+      // Update player list in the UI
+      document.getElementById('playerList').innerHTML =
+        data.players.map(p => `<li>${p}</li>`).join('');
+    }
+  }
+  
+  // Poll every 2 seconds
+  setInterval(() => {
+    const lobbyId = new URLSearchParams(window.location.search).get('lobby');
+    pollLobbyState(lobbyId);
+  }, 2000);
+
+  async function startGame(lobbyId) {
+    await fetch(`/api/lobby/${lobbyId}/start`, { method: 'POST' });
+  }
+  
+  

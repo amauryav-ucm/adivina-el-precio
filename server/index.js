@@ -44,3 +44,53 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+
+
+
+const lobbies = {};
+
+app.post('/api/lobby/create', (req, res) => {
+  const lobbyId = Math.random().toString(36).substring(2, 8); // short random ID
+  lobbies[lobbyId] = {
+    players: [],
+    started: false,
+  };
+  res.json({ lobbyId });
+});
+
+app.post('/api/lobby/:id/join', express.json(), (req, res) => {
+  const lobbyId = req.params.id;
+  const playerName = req.body.name;
+
+  if (!lobbies[lobbyId]) {
+    return res.status(404).json({ error: 'Lobby not found' });
+  }
+
+  if (lobbies[lobbyId].players.includes(playerName)) {
+    return res.status(400).json({ error: 'Name already taken' });
+  }
+
+  lobbies[lobbyId].players.push(playerName);
+  res.json({ success: true });
+});
+
+app.get('/api/lobby/:id', (req, res) => {
+  const lobbyId = req.params.id;
+  const lobby = lobbies[lobbyId];
+
+  if (!lobby) return res.status(404).json({ error: 'Lobby not found' });
+
+  res.json({ players: lobby.players, started: lobby.started });
+});
+
+app.post('/api/lobby/:id/start', (req, res) => {
+  const lobbyId = req.params.id;
+
+  if (!lobbies[lobbyId]) {
+    return res.status(404).json({ error: 'Lobby not found' });
+  }
+
+  lobbies[lobbyId].started = true;
+  res.json({ success: true });
+});
