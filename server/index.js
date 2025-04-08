@@ -24,6 +24,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('create-lobby', (obj, cb) => {
+    console.log('Intentando crear un lobby');
     const _lobbyCode = createLobbyCode();
     lobbies[_lobbyCode] = {
       lobbyCode: _lobbyCode,
