@@ -1,111 +1,134 @@
-const csv = require("csv-parser");
-const fs = require("fs");
+const csv = require('csv-parser');
+const fs = require('fs');
 
-const express = require("express");
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const http = require("http").createServer();
+const http = require('http').createServer();
 
 const server = app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+    console.log(`Listening on port ${PORT}`);
 });
 
-const io = require("socket.io")(server, {
-  cors: { origin: "*" }
+const io = require('socket.io')(server, {
+    cors: { origin: '*' },
 });
 
 let lobbies = {};
 
-io.on("connection", (socket) => {
-  console.log("A new user has connected: ", socket.id);
-  socket.on("message", (message) => {
-    console.log(message);
-  });
-
-  socket.on('create-lobby', (obj, cb) => {
-    console.log('Intentando crear un lobby');
-    const _lobbyCode = createLobbyCode();
-    lobbies[_lobbyCode] = {
-      lobbyCode: _lobbyCode,
-      players: {},
-      active: false,
-    };
-    cb(_lobbyCode);
-  });
-
-  socket.on('join-lobby', (obj, cb) => {
-    if (obj.lobbyCode in lobbies) {
-      cb(obj.lobbyCode);
-    } else {
-      cb(null);
-    }
-  });
-
-  socket.on('joined-lobby', (obj, cb) => {
-    if (!(obj.lobbyCode in lobbies)) {
-      socket.emit("missing-lobby");
-      return;
-    }
-    console.log("Recibido nuevo jugador");
-    lobbies[obj.lobbyCode].players[socket.id] = {
-      name: obj.playerName,
-      score: 0,
-    };
-    socket.join(obj.lobbyCode);
-    socket.to(obj.lobbyCode).emit("player-joined", {
-      playerName: obj.playerName,
-      players: lobbies[obj.lobbyCode].players,
+io.on('connection', (socket) => {
+    console.log('A new user has connected: ', socket.id);
+    socket.on('message', (message) => {
+        console.log(message);
     });
-    cb({ players: lobbies[obj.lobbyCode].players });
-  });
 
-  socket.on('start-game', (obj) => {
-    game(obj.lobbyCode);
-  });
+    socket.on('create-lobby', (obj, cb) => {
+        console.log('Intentando crear un lobby');
+        const _lobbyCode = createLobbyCode();
+        lobbies[_lobbyCode] = {
+            lobbyCode: _lobbyCode,
+            players: {},
+            active: false,
+            currentProduct: null,
+        };
+        cb(_lobbyCode);
+    });
 
-  socket.on('send-score', (obj) => {
-    console.log(`Jugador ${socket.id} ha enviado su puntaje ${obj.score}`);
-    const _player = lobbies[obj.lobbyCode].players[socket.id]
-    _player.score += obj.score;
-    console.log(`Jugador ${_player.name} ha ganado ${obj.score} puntos, ahora tiene ${_player.score} puntos`)
-  });
+    socket.on('join-lobby', (obj, cb) => {
+        if (obj.lobbyCode in lobbies) {
+            cb(obj.lobbyCode);
+        } else {
+            cb(null);
+        }
+    });
+
+    socket.on('joined-lobby', (obj, cb) => {
+        if (!(obj.lobbyCode in lobbies)) {
+            socket.emit('missing-lobby');
+            return;
+        }
+        console.log('Recibido nuevo jugador');
+        lobbies[obj.lobbyCode].players[socket.id] = {
+            name: obj.playerName,
+            score: 0,
+            lastGuess: 0,
+        };
+        socket.join(obj.lobbyCode);
+        socket.to(obj.lobbyCode).emit('player-joined', {
+            playerName: obj.playerName,
+            players: lobbies[obj.lobbyCode].players,
+        });
+        cb({ players: lobbies[obj.lobbyCode].players });
+    });
+
+    socket.on('start-game', (obj) => {
+        game(obj.lobbyCode);
+    });
+
+    socket.on('send-guess', (obj) => {
+        let _player = lobbies[obj.lobbyCode].players[socket.id];
+        let _price = lobbies[obj.lobbyCode].currentProduct.precio;
+        let _points = scoreGuess(obj.guess, _price);
+        _player.lastGuess = obj.guess;
+        _player.lastPoints = _points;
+        _player.score += Number(_points);
+        console.log(
+            `Jugador ${_player.name} ha ganado ${_points} puntos adivinando ${obj.guess} cuando era ${_price}, ahora tiene ${_player.score} puntos`
+        );
+    });
 });
 
 function createLobbyCode() {
-  return Math.random().toString(36).substring(3, 8).toUpperCase();
+    return Math.random().toString(36).substring(3, 8).toUpperCase();
 }
 
 function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function game(_lobbyCode) {
-  await wait(1000);
-  const totalRounds = 5;
-  let round = 0;
-  while (round < totalRounds) {
-    const _product = getRandomProduct();
-    io.to(_lobbyCode).emit("show-product", { product: _product });
-    await wait(10000);
-    io.to(_lobbyCode).emit("time-finished");
-  }
+    await wait(1000);
+    const totalRounds = 5;
+    let round = 0;
+    while (round < totalRounds) {
+        lobbies[_lobbyCode].currentProduct = getRandomProduct();
+        io.to(_lobbyCode).emit('show-product', {
+            product: lobbies[_lobbyCode].currentProduct,
+        });
+        await wait(10000);
+        io.to(_lobbyCode).emit('time-finished');
+        await wait(500);
+        io.to(_lobbyCode).emit('show-round-result', {
+          productPrice: lobbies[_lobbyCode].currentProduct.precio,
+          players: lobbies[_lobbyCode].players
+        });
+        await wait(3000);
+    }
 
-  await wait(1000);
+    await wait(1000);
 }
 
 let products = [];
 
-fs.createReadStream("products.csv")
-  .pipe(csv())
-  .on("data", (row) => {
-    products.push(row);
-  })
-  .on("end", () => {
-    console.log("CSV file successfully processed");
-  });
+fs.createReadStream('products.csv')
+    .pipe(csv())
+    .on('data', (row) => {
+        products.push(row);
+    })
+    .on('end', () => {
+        console.log('CSV file successfully processed');
+    });
 
 function getRandomProduct() {
-  const randomIndex = Math.floor(Math.random() * products.length);
-  return products[randomIndex];
+    const randomIndex = Math.floor(Math.random() * products.length);
+    return products[randomIndex];
+}
+
+function scoreGuess(guess, actual) {
+    ratio =
+        Math.abs(Number.parseFloat(guess) - Number.parseFloat(actual)) /
+        Number.parseFloat(actual);
+    if (ratio >= 1) return 0;
+    return ((1.0 - ratio) * 1000).toFixed(0);
 }

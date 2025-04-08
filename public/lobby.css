@@ -1,0 +1,142 @@
+/* Main stuff */
+
+html {
+    font-family: 'Inter', sans-serif;
+    font-size: calc(15px + 0.390625vw);
+    color: white;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+}
+
+/* left sidebar 2-column layout */
+/* grid container */
+.lobby {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+        'header'
+        'main-content'
+        'left-sidebar'
+        'footer';
+
+    /* fallback height */
+    min-height: 100vh;
+
+    /* new small viewport height for modern browsers */
+    min-height: 100svh;
+    background-color: rgb(20, 20, 20);
+}
+
+/* general column padding */
+.lobby > * {
+    padding: 1rem;
+}
+
+/* assign columns to grid areas */
+.lobby > .header {
+    grid-area: header;
+    background: rgba(255, 255, 255, 0.05);
+}
+.lobby > .main-content {
+    grid-area: main-content;
+}
+.lobby > .left-sidebar {
+    grid-area: left-sidebar;
+    background: rgba(255, 255, 255, 0.1);
+}
+.lobby > .footer {
+    grid-area: footer;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* tablet breakpoint */
+@media (min-width: 768px) {
+    .lobby {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            'header header header'
+            'left-sidebar main-content main-content'
+            'footer footer footer';
+    }
+}
+
+/* Product container */
+
+/* container */
+.product-container {
+    display: block;
+}
+
+/* columns */
+.product-container > * {
+    padding: 1rem;
+}
+
+.product-container-image {
+    display: flex;
+    justify-content: center;
+}
+
+/* tablet breakpoint */
+@media (min-width: 1200px) {
+    .product-container {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+    }
+}
+
+button,
+input[type='number'] {
+    background-color: #2a2a40;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin: 10px;
+    outline: none;
+    transition: background-color 0.2s ease;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+button:hover,
+input[type='number']:hover {
+    background-color: #3a3a55;
+}
+
+input[type='number'] {
+    width: 150px;
+    text-align: right;
+}
+
+h2 {
+    margin: 20px 0 10px;
+}
+
+p {
+    margin: 5px 0;
+    font-size: 18px;
+}
+
+#productContainer img {
+    width: 100%; /* Makes it responsive */
+    max-width: 400px; /* Cap the size at 400px */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 12px;
+    box-shadow: 0 0 10px #00000088;
+}

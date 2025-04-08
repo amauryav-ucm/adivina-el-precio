@@ -2,23 +2,36 @@
 <html>
     <head>
         <title>Test</title>
-        <link rel="stylesheet" href="style.css"></style>
-
+        <link href="lobby.css" rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+            rel="stylesheet"
+        />
     </head>
     <body>
-        <header>
-            <h1>Adivina el precio</h1>
-        </header>
-        <main id="main-content">
-            <p id="lobby-code">ID del Lobby: FHD3NJ</p>
-            <p id="player-list-title">Cargando jugadores...</p>
-            <ul id="player-list">
-            </ul>
-            <button id="start-game-button">Iniciar partida</button>
-        </main>
-        <script src="https://cdn.socket.io/4.8.1/socket.io.js"></script>
-        <script defer src="lobby.js"></script>
-      </body>
-
-      
+        <div class="lobby">
+            <header class="header">
+                <h1>Adivina el precio</h1>
+            </header>
+            <main class="main-content" id="main-content">
+                <button id="start-game-button">Iniciar partida</button>
+            </main>
+            <section class="left-sidebar">
+                <p id="lobby-code">ID del Lobby</p>
+                <table id="player-table">
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="player-table-content">
+                    </tbody>
+                </table>
+            </section>
+            <footer class="footer">Footer</footer>
+            <script src="https://cdn.socket.io/4.8.1/socket.io.js"></script>
+            <script defer src="lobby.js"></script>
+        </div>
+    </body>
 </html>
