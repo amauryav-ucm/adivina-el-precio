@@ -31,7 +31,18 @@ io.on('connection', (socket) => {
       },
       active: false
     };
+    console.log(lobbies);
     cb(_lobbyCode);
+  });
+
+  socket.on('join-lobby', (obj, cb) => {
+    if(obj.lobbyCode in lobbies){
+      lobbies[obj.lobbyCode].players[socket.id] = obj.playerName;
+      console.log(lobbies);
+      cb(lobbyCode);
+    } else {
+      cb(null);
+    }
   })
 });
 

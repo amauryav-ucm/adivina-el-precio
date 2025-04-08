@@ -6,8 +6,8 @@ document.getElementById('create-lobby-button').addEventListener("click", () => {
 
 document.getElementById('join-lobby-button').addEventListener("click", () => {
     joinLobby(
-        document.getElementById('lobby-code-input').textContent,
-        document.getElementById('player-name-input').textContent
+        document.getElementById('lobby-code-input').value,
+        document.getElementById('player-name-input').value
     )
 })
 
