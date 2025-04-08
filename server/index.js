@@ -12,7 +12,7 @@ const server = app.listen(PORT, () => {
 });
 
 const io = require("socket.io")(server, {
-  cors: { origin: "*" },
+  cors: { origin: "*" }
 });
 
 let lobbies = {};

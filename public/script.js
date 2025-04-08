@@ -1,4 +1,5 @@
-const socket = io("http://localhost:3001");
+//const socket = io("http://localhost:3001");
+const socket = io("https://test-9p0r.onrender.com");
 
 document.getElementById("create-lobby-button").addEventListener("click", () => {
   createLobby(document.getElementById("player-name-input").value);
@@ -13,7 +14,7 @@ document.getElementById("join-lobby-button").addEventListener("click", () => {
 
 socket.on("connect", () => {
   console.log(`Conectado con id: ${socket.id}`);
-});
+});7
 
 async function createLobby(_playerName) {
   console.log("Intentando crear un lobby");
