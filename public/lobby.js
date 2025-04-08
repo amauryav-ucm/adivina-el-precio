@@ -1,21 +1,110 @@
-const socket = io('https://test-9p0r.onrender.com');    
+const socket = io("http://localhost:3001");
 
-document.getElementById('start-game-button').addEventListener("click", startGame);
+document
+  .getElementById("start-game-button")
+  .addEventListener("click", startGame);
+const _lobbyCode = new URLSearchParams(window.location.search).get("lobby");
 
-function startGame(){
-    console.log('Match started');
+socket.on("connect", () => {
+  console.log("Conectado el lobby al socket");
+  socket.emit(
+    "joined-lobby",
+    {
+      playerName: window.prompt("Escribe tu nombre"),
+      lobbyCode: _lobbyCode,
+    },
+    (obj) => setUp(obj)
+  );
+});
+
+socket.on("missing-lobby", () => {
+  window.location.href = "index.html";
+});
+
+function setUp(obj) {
+  updatePlayers(obj.players);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const lobbyCode = new URLSearchParams(window.location.search).get('lobby');
-    document.getElementById('lobby-code').textContent=`ID del Lobby: ${lobbyCode}`; 
-    
+function startGame() {
+  console.log("Match started");
+  socket.emit("start-game", { lobbyCode: _lobbyCode });
+}
 
-})
+function updatePlayers(players) {
+  document.getElementById("player-list-title").textContent = "Jugadores:";
+  document.getElementById("player-list").innerHTML = "";
+  for (const _playerName of Object.values(players)) {
+    const li = document.createElement("li");
+    li.textContent = _playerName;
+    document.getElementById("player-list").appendChild(li);
+  }
+}
 
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById(
+    "lobby-code"
+  ).textContent = `ID del Lobby: ${_lobbyCode}`;
+});
 
+socket.on("player-joined", (obj) => {
+  console.log(`El juegador ${obj.playerName} se ha unido`);
+  updatePlayers(obj.players);
+});
 
+socket.on("show-product", (obj) => {
+  console.log(obj.product);
+  showNewItem(obj.product);
+});
 
+function showNewItem(product) {
+  itemPrice = product.precio;
+  document.getElementById('main-content').innerHTML = `
+          <div class="row" id = "productContainer">
+            <img src="${product.imagen}" alt="${product.nombre}" />
+            <div class="name-price">
+            <h2>${product.nombre}</h2>
+            <input type="number" step="0.01" min="0" id="guessInput" style="text-align: right;"/>
+            <button id="submit-btn">Confirmar</button>
+            <div>
+          </div>
+        `;
+  document.getElementById("submit-btn").addEventListener("click", () => {
+    makeGuess();
+    currentRound += 1;
+    if (currentRound >= attempts) {
+      showFinalScore();
+      return;
+    }
+    showResult();
+  });
+  const inputField = document.getElementById("guessInput");
+
+  // Handle keydown events
+  inputField.addEventListener("keydown", (event) => {
+    // Only allow digits (0-9) and the decimal point (.)
+    if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
+      event.preventDefault();
+      // Allow only one decimal point in the input
+      if (event.key === "." && !rawInput.includes(".")) {
+        rawInput += ".";
+      } else if (event.key >= "0" && event.key <= "9") {
+        rawInput += event.key;
+      }
+      updateFormattedValue();
+    } else if (event.key === "Backspace") {
+      event.preventDefault();
+      rawInput = rawInput.slice(0, -1);
+      updateFormattedValue();
+    }
+  });
+
+  // Update the input field with formatted value
+  function updateFormattedValue() {
+    let num = parseFloat(rawInput) || 0;
+    let formatted = (num / 100).toFixed(2); // force 2 decimal places
+    inputField.value = formatted;
+  }
+}
 
 /*
 
@@ -138,4 +227,3 @@ function scoreGuess(guess, actual) {
   
   
   */
-  
