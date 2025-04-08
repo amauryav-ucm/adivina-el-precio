@@ -9,8 +9,20 @@
             <h1>Adivina el precio</h1>
         </header>
         <main id="main-content">
-            <button id="create-lobby-button">Crear Lobby</button>
-            <button id="join-lobby-button">Unirse a un Lobby</button>
+            <div>
+                <form>
+                    <input type="text" id="player-name-input">
+                    <button type="button" id="create-lobby-button">Crear Lobby</button>
+                </form>
+            </div>
+           
+            <div>
+                <form>
+                    <input type="text" id="lobby-code-input">
+                    <button type="button" id="join-lobby-button">Unirse a un Lobby</button>
+                </form>
+            </div>
+            
         </main>
         
         <script src="https://cdn.socket.io/4.8.1/socket.io.js"></script>

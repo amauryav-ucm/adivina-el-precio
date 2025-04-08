@@ -36,6 +36,6 @@ io.on('connection', (socket) => {
 });
 
 function createLobbyCode(){
-  return Math.random().toString().substring(2,8).toUpperCase();
+  return Math.random().toString(36).substring(3,8).toUpperCase();
 }
 
