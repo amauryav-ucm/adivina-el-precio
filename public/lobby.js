@@ -2,10 +2,13 @@ const socket = io(getApiURL());
 
 const _lobbyCode = new URLSearchParams(window.location.search).get('lobby');
 let rawInput = '';
+let _guess;
 
-document
-    .getElementById('start-game-button')
-    .addEventListener('click', startGame);
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById(
+        'lobby-code'
+    ).textContent = `ID del Lobby: ${_lobbyCode}`;
+});
 
 socket.on('connect', () => {
     console.log('Conectado el lobby al socket');
@@ -23,70 +26,48 @@ socket.on('missing-lobby', () => {
     window.location.href = 'index.html';
 });
 
+socket.on('give-controls', showControlPanel);
+
 function setUp(obj) {
-    updatePlayers(obj.players);
+    updatePlayers(obj);
 }
 
-function startGame() {
-    console.log('Match started');
-    socket.emit('start-game', { lobbyCode: _lobbyCode });
-}
+socket.on('player-joined', updatePlayers);
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById(
-        'lobby-code'
-    ).textContent = `ID del Lobby: ${_lobbyCode}`;
-});
+socket.on('show-product', showNewItem);
 
-socket.on('player-joined', (obj) => {
-    console.log(`El juegador ${obj.playerName} se ha unido`);
-    updatePlayers(obj.players);
-});
+socket.on('time-finished', sendGuess);
 
-socket.on('show-product', (obj) => {
-    //console.log(obj.product);
-    showNewItem(obj.product);
-});
+socket.on('show-round-result', showRoundResult);
 
-socket.on('time-finished', () => {
-    let _guess =
-        Number.parseFloat(document.getElementById('price-guess-input').value) ||
-        0.0;
-    console.log(`Se me ha acabado el tiempo, envaire un ${_guess}`);
-    rawInput = '';
-    socket.emit('send-guess', {
-        lobbyCode: _lobbyCode,
-        guess: _guess,
-    });
-});
+socket.on('game-finished', showFinalResult);
 
-socket.on('show-round-result', (obj) => {
-    updatePlayers(obj.players);
-    showRoundResult(obj.productPrice, obj.players);
-});
-
-function showNewItem(product) {
-    itemPrice = product.precio;
+function showNewItem(obj) {
+    const _product = obj.product;
+    itemPrice = _product.precio;
     document.getElementById('main-content').innerHTML = `
-          <div class='product-container' id="product-container" />
-            <div class="product-container-image">
-              <img src="${product.imagen}" alt="${product.nombre}" />
-            </div>
-            <div class="name-price">
-              <h2>${product.nombre}</h2>
-              <input type="number" step="0.01" min="0" id="price-guess-input" style="text-align: right;"/>
-              <button id="submit-btn">Confirmar</button>
-            <div>
+          <div class="product-container" id="product-container">
+              <div class="product-container-image">
+                  <img src="${_product.imagen}" alt="${_product.nombre}" />
+              </div>
+              <div class="name-price">
+                  <h2>${_product.nombre}</h2>
+                  <div id="price-area">
+                      <input
+                          type="text"
+                          id="price-guess-input"
+                          style="text-align: right"
+                      />
+                      <button id="submit-btn">Confirmar</button>
+                  </div>
+              </div>
           </div>
         `;
     document.getElementById('submit-btn').addEventListener('click', () => {
-        makeGuess();
-        currentRound += 1;
-        if (currentRound >= attempts) {
-            showFinalScore();
-            return;
-        }
-        showResult();
+        _guess = document.getElementById('price-guess-input').value;
+        document.getElementById('price-area').innerHTML = `
+        <h3 id="guessed-price">${_guess} €</h3>
+      `;
     });
 
     const inputField = document.getElementById('price-guess-input');
@@ -117,9 +98,10 @@ function showNewItem(product) {
     }
 }
 
-function updatePlayers(players) {
+function updatePlayers(obj) {
+    const _players = obj.players;
     document.getElementById('player-table-content').innerHTML = '';
-    const _sortedPlayers = Object.values(players).sort(
+    const _sortedPlayers = Object.values(_players).sort(
         (j1, j2) => j2.score - j1.score
     );
     for (const _player of _sortedPlayers) {
@@ -132,26 +114,27 @@ function updatePlayers(players) {
     }
 }
 
-function showRoundResult(productPrice, players) {
+function showRoundResult(obj) {
+    const _productPrice = obj.productPrice;
+    const _players = obj.players;
+    updatePlayers(obj);
     document.getElementById('main-content').innerHTML = `
-          <div class='result-container' id="result-container" />
-            <div class="price-reveal">
-              <h3>El precio era ${Number(productPrice).toFixed(2)} € </h3>
-            </div>
-            <table id="player-guess-table">
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>Respuesta</th>
-                            <th>Puntos</th>
-                        </tr>
-                    </thead>
-                    <tbody id="player-guess-table-content">
-                    </tbody>
-                </table>
-          </div>
+          <div class="result-container" id="result-container" />
+              <div class="price-reveal">
+                  <h3>El precio era ${Number(_productPrice).toFixed(2)} €</h3>
+              </div>
+              <table id="player-guess-table">
+                  <thead>
+                      <tr>
+                          <th>Jugador</th>
+                          <th>Respuesta</th>
+                          <th>Puntos</th>
+                      </tr>
+                  </thead>
+                  <tbody id="player-guess-table-content"></tbody>
+              </table>
         `;
-    const _sortedPlayers = Object.values(players).sort(
+    const _sortedPlayers = Object.values(_players).sort(
         (j1, j2) => j2.lastPoints - j1.lastPoints
     );
     for (const _player of _sortedPlayers) {
@@ -165,116 +148,56 @@ function showRoundResult(productPrice, players) {
     }
 }
 
-/*
-
-
-
-
-  
-  const attempts = 5;
-  
-  let currentRound = 0;
-  let totalScore = 0;
-  let itemPrice = 0.0;
-  let guess = 0.0;
-  let score = 0;
-  
-  const scoreBoard = document.getElementById("score");
-  const container = document.getElementById("container");
-  
-  function showNewItem() {
-    fetch("https://test-9p0r.onrender.com/api/random-product")
-      .then((response) => response.json())
-      .then((product) => {
-        itemPrice = product.precio;
-        container.innerHTML = `
-          <div class="row" id = "product-container">
-            <img src="${product.imagen}" alt="${product.nombre}" />
-            <div class="name-price">
-            <h2>${product.nombre}</h2>
-            <input type="number" step="0.01" min="0" id="price-guess-input" style="text-align: right;"/>
-            <button id="submit-btn">Confirmar</button>
-            <div>
-          </div>
+function showControlPanel() {
+    document.getElementById('main-content').innerHTML = `
+          <div class='control-panel-container' id="control-panel-container" />
+            
+                <label for="total-rounds-input">Numero de rondas</label>
+                <input id="total-rounds-input" type="number" value="10">
+                <button id="start-game-button">Iniciar partida</button>
         `;
-        document.getElementById("submit-btn").addEventListener("click", () => {
-          makeGuess();
-          currentRound += 1;
-          if (currentRound >= attempts) {
-            showFinalScore();
-            return;
-          }
-          showResult();
+    document
+        .getElementById('start-game-button')
+        .addEventListener('click', () => {
+            console.log('boton');
+            startGame(
+                Number(document.getElementById('total-rounds-input').value)
+            );
         });
-        const inputField = document.getElementById("price-guess-input");
-  
-        // Handle keydown events
-        inputField.addEventListener("keydown", (event) => {
-          // Only allow digits (0-9) and the decimal point (.)
-          if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
-            event.preventDefault();
-            // Allow only one decimal point in the input
-            if (event.key === "." && !rawInput.includes(".")) {
-              rawInput += ".";
-            } else if (event.key >= "0" && event.key <= "9") {
-              rawInput += event.key;
-            }
-            updateFormattedValue();
-          } else if (event.key === "Backspace") {
-            event.preventDefault();
-            rawInput = rawInput.slice(0, -1);
-            updateFormattedValue();
-          }
-        });
-  
-        // Update the input field with formatted value
-        function updateFormattedValue() {
-          let num = parseFloat(rawInput) || 0;
-          let formatted = (num / 100).toFixed(2); // force 2 decimal places
-          inputField.value = formatted;
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching product:", err);
-      });
-  }
-  
-  function showResult() {
-    container.innerHTML = `
-          <p>Has adivinado:\t${Number.parseFloat(guess).toFixed(2)} €</p>
-          <p>Precio real:\t${Number.parseFloat(itemPrice).toFixed(2)} €</p>
-          <p>Has ganado ${score} puntos</p>
-      `;
-    setTimeout(() => showNewItem(), "5000");
-  }
-  
-  function makeGuess() {
-    guess = parseFloat(document.getElementById("price-guess-input").value);
-    score = scoreGuess(guess, itemPrice);
-    rawInput = "";
-    totalScore = Number(totalScore) + Number(score);
-    updateScore();
-  }
-  
-  function updateScore() {
-    scoreBoard.innerText = totalScore;
-  }
-  
-  function showFinalScore() {
-    container.innerHTML = `
-        <h2>Fin del juego!</h2>
-        <p>Tu puntaje: ${totalScore}</p>
-        <button id="restartBtn">Jugar otra vez</button>
-      `;
-  
-    document.getElementById("restartBtn").addEventListener("click", () => {
-      // reset game state
-      totalScore = 0;
-      currentRound = 0;
-      updateScore();
-      showNewItem();
+}
+
+function sendGuess() {
+    const _textBox = document.getElementById('price-guess-input');
+    let guess;
+    if (_textBox) {
+        _guess =
+            Number.parseFloat(
+                document.getElementById('price-guess-input').value
+            ) || 0.0;
+    }
+    rawInput = '';
+    socket.emit('send-guess', {
+        lobbyCode: _lobbyCode,
+        guess: _guess,
     });
-  }
-  
-  
-  */
+}
+
+function showFinalResult(obj) {
+    const _sortedPlayers = Object.values(obj.players).sort(
+        (j1, j2) => j2.lastPoints - j1.lastPoints
+    );
+    document.getElementById('main-content').innerHTML = `
+          <div class='result-container' id="result-container" />
+            <div class="price-reveal">
+              <h3>Ha ganado ${_sortedPlayers[0].name} :) </h3>
+            </div>
+        `;
+}
+
+function startGame(_totalRounds) {
+    console.log('Match started');
+    socket.emit('start-game', {
+        lobbyCode: _lobbyCode,
+        totalRounds: _totalRounds,
+    });
+}

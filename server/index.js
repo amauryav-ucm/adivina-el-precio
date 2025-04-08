@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
         console.log('Intentando crear un lobby');
         const _lobbyCode = createLobbyCode();
         lobbies[_lobbyCode] = {
+            creator: null,
             lobbyCode: _lobbyCode,
             players: {},
             active: false,
@@ -49,6 +50,11 @@ io.on('connection', (socket) => {
             return;
         }
         console.log('Recibido nuevo jugador');
+        if(lobbies[obj.lobbyCode].creator === null){
+          lobbies[obj.lobbyCode].creator = socket.id;
+          socket.emit('give-controls');
+        }
+
         lobbies[obj.lobbyCode].players[socket.id] = {
             name: obj.playerName,
             score: 0,
@@ -63,10 +69,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('start-game', (obj) => {
-        if(lobbies[obj.lobbyCode].active === true)
-          return;
+        if (lobbies[obj.lobbyCode].active === true) return;
         lobbies[obj.lobbyCode].active = true;
-        game(obj.lobbyCode);
+        game(obj.lobbyCode, obj.totalRounds);
     });
 
     socket.on('send-guess', (obj) => {
@@ -90,11 +95,11 @@ function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function game(_lobbyCode) {
+async function game(_lobbyCode, totalRounds) {
     await wait(1000);
-    const totalRounds = 5;
     let round = 0;
     while (round < totalRounds) {
+        round++;
         lobbies[_lobbyCode].currentProduct = getRandomProduct();
         io.to(_lobbyCode).emit('show-product', {
             product: lobbies[_lobbyCode].currentProduct,
@@ -103,13 +108,20 @@ async function game(_lobbyCode) {
         io.to(_lobbyCode).emit('time-finished');
         await wait(500);
         io.to(_lobbyCode).emit('show-round-result', {
-          productPrice: lobbies[_lobbyCode].currentProduct.precio,
-          players: lobbies[_lobbyCode].players
+            productPrice: lobbies[_lobbyCode].currentProduct.precio,
+            players: lobbies[_lobbyCode].players,
         });
         await wait(3000);
     }
+    io.to(_lobbyCode).emit('game-finished', {
+      players: lobbies[_lobbyCode].players
+    });
 
-    await wait(1000);
+    await wait(5000);
+    
+    lobbies[_lobbyCode].active = false;
+
+    io.to(lobbies[_lobbyCode].creator).emit('give-controls');
 }
 
 let products = [];
