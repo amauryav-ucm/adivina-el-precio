@@ -1,9 +1,12 @@
-const socket = io("http://localhost:3001");
+//const socket = io("http://localhost:3001");
+const socket = io("https://test-9p0r.onrender.com");
+
+const _lobbyCode = new URLSearchParams(window.location.search).get("lobby");
+let rawInput = "";
 
 document
   .getElementById("start-game-button")
   .addEventListener("click", startGame);
-const _lobbyCode = new URLSearchParams(window.location.search).get("lobby");
 
 socket.on("connect", () => {
   console.log("Conectado el lobby al socket");
@@ -33,9 +36,9 @@ function startGame() {
 function updatePlayers(players) {
   document.getElementById("player-list-title").textContent = "Jugadores:";
   document.getElementById("player-list").innerHTML = "";
-  for (const _playerName of Object.values(players)) {
+  for (const _player of Object.values(players)) {
     const li = document.createElement("li");
-    li.textContent = _playerName;
+    li.textContent = _player.name;
     document.getElementById("player-list").appendChild(li);
   }
 }
@@ -52,13 +55,21 @@ socket.on("player-joined", (obj) => {
 });
 
 socket.on("show-product", (obj) => {
-  console.log(obj.product);
+  //console.log(obj.product);
   showNewItem(obj.product);
+});
+
+socket.on("time-finished", () => {
+  console.log(`Se me ha acabado el tiempo, envaire un ${rawInput}`);
+  socket.emit("send-score", {
+    lobbyCode: _lobbyCode,
+    score: 2,
+  });
 });
 
 function showNewItem(product) {
   itemPrice = product.precio;
-  document.getElementById('main-content').innerHTML = `
+  document.getElementById("main-content").innerHTML = `
           <div class="row" id = "productContainer">
             <img src="${product.imagen}" alt="${product.nombre}" />
             <div class="name-price">
@@ -77,13 +88,14 @@ function showNewItem(product) {
     }
     showResult();
   });
+  
   const inputField = document.getElementById("guessInput");
 
   // Handle keydown events
   inputField.addEventListener("keydown", (event) => {
     // Only allow digits (0-9) and the decimal point (.)
-    if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
       event.preventDefault();
+    if ((event.key >= "0" && event.key <= "9") || event.key === ".") {
       // Allow only one decimal point in the input
       if (event.key === "." && !rawInput.includes(".")) {
         rawInput += ".";
@@ -92,7 +104,6 @@ function showNewItem(product) {
       }
       updateFormattedValue();
     } else if (event.key === "Backspace") {
-      event.preventDefault();
       rawInput = rawInput.slice(0, -1);
       updateFormattedValue();
     }
@@ -104,6 +115,15 @@ function showNewItem(product) {
     let formatted = (num / 100).toFixed(2); // force 2 decimal places
     inputField.value = formatted;
   }
+    
+}
+
+function scoreGuess(guess, actual) {
+  ratio =
+    Math.abs(Number.parseFloat(guess) - Number.parseFloat(actual)) /
+    Number.parseFloat(actual);
+  if (ratio >= 1) return 0;
+  return ((1.0 - ratio) * 1000).toFixed(0);
 }
 
 /*
@@ -111,13 +131,6 @@ function showNewItem(product) {
 
 
 
-function scoreGuess(guess, actual) {
-    ratio =
-      Math.abs(Number.parseFloat(guess) - Number.parseFloat(actual)) /
-      Number.parseFloat(actual);
-    if (ratio >= 1) return 0;
-    return ((1.0 - ratio) * 1000).toFixed(0);
-  }
   
   const attempts = 5;
   
@@ -126,7 +139,6 @@ function scoreGuess(guess, actual) {
   let itemPrice = 0.0;
   let guess = 0.0;
   let score = 0;
-  let rawInput = "";
   
   const scoreBoard = document.getElementById("score");
   const container = document.getElementById("container");
