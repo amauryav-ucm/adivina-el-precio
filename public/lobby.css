@@ -54,7 +54,7 @@ body {
 }
 
 /* tablet breakpoint */
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
     .lobby {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: auto 1fr auto;

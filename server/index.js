@@ -63,6 +63,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('start-game', (obj) => {
+        if(lobbies[obj.lobbyCode].active === true)
+          return;
+        lobbies[obj.lobbyCode].active = true;
         game(obj.lobbyCode);
     });
 
