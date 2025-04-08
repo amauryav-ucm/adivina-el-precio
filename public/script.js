@@ -1,26 +1,24 @@
-const socket = io('https://test-9p0r.onrender.com'); 
+const socket = io("https://test-9p0r.onrender.com");
 
 document.getElementById("create-lobby-button").addEventListener("click", () => {
-    socket.emit('message', {mensaje: "HOLA"});
+  createLobby("Amaury");
 });
 
 socket.on("connect", () => {
-    console.log(`Conectado con id: ${socket.id}`);
+  console.log(`Conectado con id: ${socket.id}`);
 });
 
-
 async function createLobby(name) {
-    console.log('Intentando crear un lobby');
-  socket.emit('create-lobby', { playerName: name});
+  console.log("Intentando crear un lobby");
+  socket.emit("create-lobby", { playerName: name }, lobbyCode => {
+    goToLobby(lobbyCode);
+  });
+}
 
-  socket.on('lobby-created', (lobby) => {
-    console.log(`Se ha creado un lobby con codigo: ${lobby.lobbyId}`)
-    window.location.href = `lobby.html?lobby=${lobby.lobbyId}`;
-  })
+function gotToLobby(lobbyCode) {
+    window.location.href = `lobby.html?lobby=${lobbyCode}`;
 }
 
 async function joinLobby(lobbyId, playerName) {
-  
-
   // Save name and lobbyId in localStorage or a global var
 }
