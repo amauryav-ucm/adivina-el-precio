@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
       console.log(lobbies);
       cb(lobbyCode);
     } else {
-      cb(null);
+      cb();
     }
   })
 });
