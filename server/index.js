@@ -18,7 +18,7 @@ const io = require("socket.io")(server, {
 let lobbies = {};
 
 io.on("connection", (socket) => {
-  //console.log("A new user has connected: ", socket.id);
+  console.log("A new user has connected: ", socket.id);
   socket.on("message", (message) => {
     console.log(message);
   });
