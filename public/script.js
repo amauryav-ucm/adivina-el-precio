@@ -24,7 +24,7 @@ async function createLobby(_playerName) {
 
 function goToLobby(_lobbyCode) {
   if (_lobbyCode === null) console.error("Error al unirse al lobby");
-  window.location.href = `lobby.html?lobby=${_lobbyCode}`;
+  else window.location.href = `lobby.html?lobby=${_lobbyCode}`;
 }
 
 async function joinLobby(_lobbyCode, _playerName) {
