@@ -184,7 +184,7 @@ function sendGuess() {
 
 function showFinalResult(obj) {
     const _sortedPlayers = Object.values(obj.players).sort(
-        (j1, j2) => j2.lastPoints - j1.lastPoints
+        (j1, j2) => j2.score - j1.score
     );
     document.getElementById('main-content').innerHTML = `
           <div class='result-container' id="result-container" />
