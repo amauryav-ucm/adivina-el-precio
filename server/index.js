@@ -104,14 +104,14 @@ async function game(_lobbyCode, totalRounds) {
         io.to(_lobbyCode).emit('show-product', {
             product: lobbies[_lobbyCode].currentProduct,
         });
-        await wait(10000);
+        await wait(15000);
         io.to(_lobbyCode).emit('time-finished');
         await wait(500);
         io.to(_lobbyCode).emit('show-round-result', {
             productPrice: lobbies[_lobbyCode].currentProduct.precio,
             players: lobbies[_lobbyCode].players,
         });
-        await wait(3000);
+        await wait(5000);
     }
     io.to(_lobbyCode).emit('game-finished', {
       players: lobbies[_lobbyCode].players
