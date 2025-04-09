@@ -11,6 +11,15 @@ document.getElementById('join-lobby-button').addEventListener('click', () => {
     );
 });
 
+const lobbyCodeInput = document.getElementById('lobby-code-input');
+
+lobbyCodeInput.addEventListener('input', function (event) {
+    let value = lobbyCodeInput.value;
+    value = value.replace(/[^a-zA-Z0-9]/g, '');
+    value = value.toUpperCase();
+    lobbyCodeInput.value = value;
+});
+
 socket.on('connect', () => {
     console.log(`Conectado con id: ${socket.id}`);
 });

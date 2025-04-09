@@ -2,34 +2,38 @@
 <html>
     <head>
         <title>Test</title>
-
+        <link href="style.css" rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+            rel="stylesheet"
+        />
     </head>
     <body>
-        <header>
-            <h1>Adivina el precio</h1>
-        </header>
-        <main id="main-content">
-            <div>
-                <form>
-                    <label for="player-name-input">Nombre del jugador</label>
-                    <input type="text" id="player-name-input">
-                    <button type="button" id="create-lobby-button">Crear Lobby</button>
-                </form>
-            </div>
-           
-            <div>
-                <form>
+        <div class="main-page">
+            <header class="header">
+                <h1>Adivina el precio</h1>
+            </header>
+            <main class="main-content" id="main-content">
+                <div>
+                    <button type="button" id="create-lobby-button">
+                        Crear Lobby
+                    </button>
+                </div>
+
+                <div>
                     <label for="lobby-code-input">Codigo de Lobby</label>
-                    <input type="text" id="lobby-code-input">
-                    <button type="button" id="join-lobby-button">Unirse a un Lobby</button>
-                </form>
-            </div>
-            
-        </main>
-        
+                    <input type="text" id="lobby-code-input" />
+                    <button type="button" id="join-lobby-button">
+                        Unirse a un Lobby
+                    </button>
+                </div>
+            </main>
+
+            <footer class="footer">Juego de mierda</footer>
+        </div>
+
         <script src="https://cdn.socket.io/4.8.1/socket.io.js"></script>
         <script src="config.js"></script>
         <script defer src="script.js"></script>
-      </body>
-
+    </body>
 </html>

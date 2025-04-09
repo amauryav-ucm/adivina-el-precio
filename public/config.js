@@ -1,4 +1,4 @@
-const DEBUG = false;
+const DEBUG = true;
 
 function getApiURL(){
     return DEBUG

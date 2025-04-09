@@ -121,6 +121,8 @@ async function game(_lobbyCode, totalRounds) {
     
     lobbies[_lobbyCode].active = false;
 
+    resetScores(_lobbyCode);
+
     io.to(lobbies[_lobbyCode].creator).emit('give-controls');
 }
 
@@ -146,4 +148,12 @@ function scoreGuess(guess, actual) {
         Number.parseFloat(actual);
     if (ratio >= 1) return 0;
     return ((1.0 - ratio) * 1000).toFixed(0);
+}
+
+function resetScores(_lobbyCode){
+  for (let _playerId in lobbies[_lobbyCode].players) {
+    if (lobbies[_lobbyCode].players.hasOwnProperty(_playerId)) {
+      lobbies[_lobbyCode].players[_playerId].score = 0;
+    }
+  }
 }
