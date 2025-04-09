@@ -50,9 +50,9 @@ io.on('connection', (socket) => {
             return;
         }
         console.log('Recibido nuevo jugador');
-        if(lobbies[obj.lobbyCode].creator === null){
-          lobbies[obj.lobbyCode].creator = socket.id;
-          socket.emit('give-controls');
+        if (lobbies[obj.lobbyCode].creator === null) {
+            lobbies[obj.lobbyCode].creator = socket.id;
+            socket.emit('give-controls');
         }
 
         lobbies[obj.lobbyCode].players[socket.id] = {
@@ -61,8 +61,7 @@ io.on('connection', (socket) => {
             lastGuess: 0,
         };
         socket.join(obj.lobbyCode);
-        socket.to(obj.lobbyCode).emit('player-joined', {
-            playerName: obj.playerName,
+        socket.to(obj.lobbyCode).emit('update-players', {
             players: lobbies[obj.lobbyCode].players,
         });
         cb({ players: lobbies[obj.lobbyCode].players });
@@ -84,6 +83,29 @@ io.on('connection', (socket) => {
         console.log(
             `Jugador ${_player.name} ha ganado ${_points} puntos adivinando ${obj.guess} cuando era ${_price}, ahora tiene ${_player.score} puntos`
         );
+    });
+
+    socket.on('disconnecting', () => {
+        console.log(`A user has disconnected: ${socket.id}`);
+        console.log(socket.rooms);
+        for (const _room of socket.rooms) {
+            if (!lobbies[_room]) continue;
+            console.log(lobbies[_room].players);
+            delete lobbies[_room].players[socket.id];
+            console.log(lobbies[_room].players);
+            if (Object.keys(lobbies[_room].players).length === 0) {
+                delete lobbies[_room];
+                return;
+            }
+            io.to(_room).emit('update-players', {
+                players: lobbies[_room].players,
+            });
+            if (lobbies[_room].creator === socket.id) {
+                lobbies[_room].creator = Object.keys(lobbies[_room].players)[0];
+                console.log(lobbies[_room].creator);
+                io.to(lobbies[_room].creator).emit('give-controls');
+            }
+        }
     });
 });
 
@@ -114,11 +136,11 @@ async function game(_lobbyCode, totalRounds) {
         await wait(5000);
     }
     io.to(_lobbyCode).emit('game-finished', {
-      players: lobbies[_lobbyCode].players
+        players: lobbies[_lobbyCode].players,
     });
 
     await wait(5000);
-    
+
     lobbies[_lobbyCode].active = false;
 
     resetScores(_lobbyCode);
@@ -150,10 +172,10 @@ function scoreGuess(guess, actual) {
     return ((1.0 - ratio) * 1000).toFixed(0);
 }
 
-function resetScores(_lobbyCode){
-  for (let _playerId in lobbies[_lobbyCode].players) {
-    if (lobbies[_lobbyCode].players.hasOwnProperty(_playerId)) {
-      lobbies[_lobbyCode].players[_playerId].score = 0;
+function resetScores(_lobbyCode) {
+    for (let _playerId in lobbies[_lobbyCode].players) {
+        if (lobbies[_lobbyCode].players.hasOwnProperty(_playerId)) {
+            lobbies[_lobbyCode].players[_playerId].score = 0;
+        }
     }
-  }
 }

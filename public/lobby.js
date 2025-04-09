@@ -15,7 +15,7 @@ socket.on('connect', () => {
     socket.emit(
         'joined-lobby',
         {
-            playerName: window.prompt('Escribe tu nombre'),
+            playerName: window.prompt('Escribe tu nombre') || 'imbecil',
             lobbyCode: _lobbyCode,
         },
         (obj) => setUp(obj)
@@ -32,7 +32,7 @@ function setUp(obj) {
     updatePlayers(obj);
 }
 
-socket.on('player-joined', updatePlayers);
+socket.on('update-players', updatePlayers);
 
 socket.on('show-product', showNewItem);
 

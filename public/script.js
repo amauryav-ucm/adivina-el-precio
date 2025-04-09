@@ -1,5 +1,8 @@
 const socket = io(getApiURL());
 
+document.addEventListener('DOMContentLoaded', () => {
+})
+
 document.getElementById('create-lobby-button').addEventListener('click', () => {
     createLobby();
 });
