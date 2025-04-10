@@ -110,7 +110,7 @@ body {
 }
 
 /* tablet breakpoint */
-@media (min-width: 1200px) {
+@media (orientation: landscape) {
     .lobby {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: auto 1fr auto;
