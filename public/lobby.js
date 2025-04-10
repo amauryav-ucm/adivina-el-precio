@@ -4,27 +4,27 @@ const _lobbyCode = new URLSearchParams(window.location.search).get('lobby');
 let rawInput = '';
 let _guess;
 const defaultNames = [
-    "Tonto",
-  "Imbécil",
-  "Idiota",
-  "Estúpido",
-  "Burro",
-  "Bobo",
-  "Memo",
-  "Zopenco",
-  "Tarado",
-  "Gilipollas",
-  "Pelmazo",
-  "Patán",
-  "Ceporro",
-  "Capullo",
-  "Pendejo",
-  "Boludo",
-  "Huevón",
-  "Mamón",
-  "Lelo",
-  "Subnormal"
-]
+    'Tonto',
+    'Imbécil',
+    'Idiota',
+    'Estúpido',
+    'Burro',
+    'Bobo',
+    'Memo',
+    'Zopenco',
+    'Tarado',
+    'Gilipollas',
+    'Pelmazo',
+    'Patán',
+    'Ceporro',
+    'Capullo',
+    'Pendejo',
+    'Boludo',
+    'Huevón',
+    'Mamón',
+    'Lelo',
+    'Subnormal',
+];
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(
@@ -37,7 +37,9 @@ socket.on('connect', () => {
     socket.emit(
         'joined-lobby',
         {
-            playerName: window.prompt('Escribe tu nombre') || defaultNames[Math.floor(Math.random() * defaultNames.length)],
+            playerName:
+                window.prompt('Escribe tu nombre') ||
+                defaultNames[Math.floor(Math.random() * defaultNames.length)],
             lobbyCode: _lobbyCode,
         },
         (obj) => setUp(obj)
@@ -66,7 +68,7 @@ socket.on('game-finished', showFinalResult);
 
 socket.on('game-error', () => {
     window.location.href = 'index.html';
-})
+});
 
 function showNewItem(obj) {
     const _product = obj.product;
@@ -78,15 +80,21 @@ function showNewItem(obj) {
                   <img src="${_product.imagen}" alt="${_product.nombre}" />
               </div>
               <div class="name-price">
+                <div>
                   <h2>${_product.nombre}</h2>
-                  <div id="price-area">
-                      <input
-                          type="text"
-                          id="price-guess-input"
-                          style="text-align: right"
-                      />
-                      <button id="submit-btn">Confirmar</button>
-                  </div>
+                </div>
+                <div id="price-area">
+                    <div>
+                    <input
+                        type="text"
+                        id="price-guess-input"
+                        style="text-align: right"
+                    />
+                    </div>
+                    <div>                
+                    <button id="submit-btn">Confirmar</button>
+                    </div>
+                </div>
               </div>
           </div>
         `;
@@ -94,7 +102,7 @@ function showNewItem(obj) {
     <div class="round-time-bar" style="--duration: ${_guessTime};">
   <div></div>
 </div>
-    `
+    `;
     document.getElementById('submit-btn').addEventListener('click', () => {
         _guess = document.getElementById('price-guess-input').value;
         document.getElementById('price-area').innerHTML = `
@@ -119,6 +127,11 @@ function showNewItem(obj) {
         } else if (event.key === 'Backspace') {
             rawInput = rawInput.slice(0, -1);
             updateFormattedValue();
+        } else if (event.key === 'Enter') {
+            _guess = document.getElementById('price-guess-input').value;
+            document.getElementById('price-area').innerHTML = `
+            <p id="guessed-price">${_guess} €</p>
+            `;
         }
     });
 
@@ -134,10 +147,10 @@ function updatePlayers(obj) {
     const _players = obj.players;
     document.getElementById('player-table-content').innerHTML = '';
     const _sortedPlayers = Object.entries(_players).sort(
-        ([,j1], [,j2]) => j2.score - j1.score
+        ([, j1], [, j2]) => j2.score - j1.score
     );
     for (const [_socketId, _player] of _sortedPlayers) {
-        console.log(`${_socketId} es igual a ${socket.id}`)
+        console.log(`${_socketId} es igual a ${socket.id}`);
         const tr = document.createElement('tr');
         tr.innerHTML = `
         <td>${_player.name}${_socketId === socket.id ? ' (Tú)' : ''}</td>
@@ -197,7 +210,7 @@ function showControlPanel() {
             console.log('boton');
             startGame(
                 Number(document.getElementById('total-rounds-input').value),
-                Number(document.getElementById('guess-time-input').value)*1000
+                Number(document.getElementById('guess-time-input').value) * 1000
             );
         });
 }
@@ -237,6 +250,6 @@ function startGame(_totalRounds, _guessTime) {
     socket.emit('start-game', {
         lobbyCode: _lobbyCode,
         totalRounds: _totalRounds,
-        guessTime: _guessTime
+        guessTime: _guessTime,
     });
 }
