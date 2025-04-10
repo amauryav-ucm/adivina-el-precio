@@ -112,7 +112,7 @@ body {
 /* tablet breakpoint */
 @media (orientation: landscape) {
     .lobby {
-        grid-template-columns: max(400px, 25vw) 1fr 1fr;
+        grid-template-columns: min(400px, 25vw) 1fr 1fr;
         grid-template-rows: auto 1fr auto;
         grid-template-areas:
             'header header header'
@@ -223,12 +223,12 @@ th {
 
 .player-table th:nth-child(1),
 .player-table td:nth-child(1) {
-    width: 350px;
+    width: 1fr;
 }
 
 .player-table th:nth-child(2),
 .player-table td:nth-child(2) {
-    width: 100px;
+    width: 90;
     text-align: right;
 }
 
