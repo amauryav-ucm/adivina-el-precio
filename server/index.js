@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
     socket.on('start-game', (obj) => {
         if (lobbies[obj.lobbyCode].active === true) return;
         lobbies[obj.lobbyCode].active = true;
-        game(obj.lobbyCode, obj.totalRounds);
+        game(obj.lobbyCode, obj.totalRounds, obj.guessTime);
         io.to(_room).emit('update-players', {
             players: lobbies[_room].players,
         });
@@ -120,16 +120,17 @@ function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function game(_lobbyCode, totalRounds) {
+async function game(_lobbyCode, _totalRounds, _guessTime) {
     await wait(1000);
     let round = 0;
-    while (round < totalRounds) {
+    while (round < _totalRounds) {
         round++;
         lobbies[_lobbyCode].currentProduct = getRandomProduct();
         io.to(_lobbyCode).emit('show-product', {
             product: lobbies[_lobbyCode].currentProduct,
+            guessTime: _guessTime
         });
-        await wait(15000);
+        await wait(_guessTime);
         io.to(_lobbyCode).emit('time-finished');
         await wait(500);
         io.to(_lobbyCode).emit('show-round-result', {
