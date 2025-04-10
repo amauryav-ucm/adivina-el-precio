@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
         lobbies[obj.lobbyCode].active = true;
         game(obj.lobbyCode, obj.totalRounds, obj.guessTime);
         io.to(obj.lobbyCode).emit('update-players', {
-            players: lobbies[_room].players,
+            players: lobbies[obj.lobbyCode].players,
         });
     });
 
