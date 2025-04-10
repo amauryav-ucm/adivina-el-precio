@@ -66,7 +66,7 @@ function showNewItem(obj) {
     document.getElementById('submit-btn').addEventListener('click', () => {
         _guess = document.getElementById('price-guess-input').value;
         document.getElementById('price-area').innerHTML = `
-        <h3 id="guessed-price">${_guess} €</h3>
+        <p id="guessed-price">${_guess} €</p>
       `;
     });
 
