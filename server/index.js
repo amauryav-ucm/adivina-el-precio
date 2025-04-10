@@ -121,35 +121,39 @@ function wait(ms) {
 }
 
 async function game(_lobbyCode, _totalRounds, _guessTime) {
-    await wait(1000);
-    let round = 0;
-    while (round < _totalRounds) {
-        round++;
-        lobbies[_lobbyCode].currentProduct = getRandomProduct();
-        io.to(_lobbyCode).emit('show-product', {
-            product: lobbies[_lobbyCode].currentProduct,
-            guessTime: _guessTime
-        });
-        await wait(_guessTime);
-        io.to(_lobbyCode).emit('time-finished');
+    try {
         await wait(500);
-        io.to(_lobbyCode).emit('show-round-result', {
-            productPrice: lobbies[_lobbyCode].currentProduct.precio,
+        let round = 0;
+        while (round < _totalRounds) {
+            round++;
+            lobbies[_lobbyCode].currentProduct = getRandomProduct();
+            io.to(_lobbyCode).emit('show-product', {
+                product: lobbies[_lobbyCode].currentProduct,
+                guessTime: _guessTime,
+            });
+            await wait(_guessTime);
+            io.to(_lobbyCode).emit('time-finished');
+            await wait(500);
+            io.to(_lobbyCode).emit('show-round-result', {
+                productPrice: lobbies[_lobbyCode].currentProduct.precio,
+                players: lobbies[_lobbyCode].players,
+            });
+            await wait(5000);
+        }
+        io.to(_lobbyCode).emit('game-finished', {
             players: lobbies[_lobbyCode].players,
         });
+
         await wait(5000);
+
+        lobbies[_lobbyCode].active = false;
+
+        resetScores(_lobbyCode);
+
+        io.to(lobbies[_lobbyCode].creator).emit('give-controls');
+    } catch (e) {
+        io.to(_lobbyCode).emit('game-error');
     }
-    io.to(_lobbyCode).emit('game-finished', {
-        players: lobbies[_lobbyCode].players,
-    });
-
-    await wait(5000);
-
-    lobbies[_lobbyCode].active = false;
-
-    resetScores(_lobbyCode);
-
-    io.to(lobbies[_lobbyCode].creator).emit('give-controls');
 }
 
 let products = [];
