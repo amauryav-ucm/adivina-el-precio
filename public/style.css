@@ -139,7 +139,7 @@ body {
 }
 
 /* tablet breakpoint */
-@media (min-width: 1200px) {
+@media (orientation: landscape) {
     .product-container {
         display: grid;
         grid-template-columns: 400px 1fr;
@@ -159,12 +159,12 @@ input {
 }
 
 label, input, button {
-    font-size: clamp(1rem, 4vh, 60px);
+    font-size: clamp(1rem, 3vh, 60px);
     
 }
 
 h1 {
-    font-size: clamp(1rem, 6vh, 80px);
+    font-size: clamp(1rem, 4vh, 80px);
 }
 
 input[type='number']::-webkit-outer-spin-button,
@@ -231,3 +231,18 @@ th {
     width: 100px;
     text-align: right;
 }
+
+.round-time-bar div {
+    height: 15px;
+    border-radius: 7px;
+    background: linear-gradient(to bottom, green, #090);
+    animation: roundtime calc(var(--duration) * 1ms) linear forwards;
+  transform-origin: left center;
+  }
+
+  @keyframes roundtime {
+    to {
+      /* More performant than animating `width` */
+      transform: scaleX(0);
+    }
+  }
