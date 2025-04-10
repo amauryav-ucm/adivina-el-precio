@@ -121,7 +121,7 @@ function showRoundResult(obj) {
     document.getElementById('main-content').innerHTML = `
           <div class="result-container" id="result-container" />
               <div class="price-reveal">
-                  <h3>El precio era ${Number(_productPrice).toFixed(2)} €</h3>
+                  <p>El precio era ${Number(_productPrice).toFixed(2)} €</p>
               </div>
               <table id="player-guess-table">
                   <thead>

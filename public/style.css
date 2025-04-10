@@ -2,8 +2,8 @@
 
 html {
     font-family: 'Inter', sans-serif;
-    font-size: calc(15px + 0.390625vw);
     color: white;
+    overflow-x: hidden;
 }
 
 body {
@@ -11,6 +11,7 @@ body {
     padding: 0;
     font-size: 100%;
     background-color: rgb(20, 20, 20);
+    position: relative;
 }
 
 /* Main page */
@@ -151,11 +152,19 @@ input {
     border: 1px solid #444;
     color: #fff;
     padding: 10px 16px;
-    font-size: 16px;
     border-radius: 8px;
     margin: 10px;
     outline: none;
     transition: background-color 0.2s ease;
+}
+
+label, input, button {
+    font-size: clamp(1rem, 4vh, 60px);
+    
+}
+
+h1 {
+    font-size: clamp(1rem, 6vh, 80px);
 }
 
 input[type='number']::-webkit-outer-spin-button,
@@ -174,9 +183,6 @@ input[type='number'] {
     text-align: right;
 }
 
-h2 {
-    margin: 20px 0 10px;
-}
 
 p {
     margin: 5px 0;
@@ -194,6 +200,14 @@ p {
 table {
     width: 100%;
     table-layout: fixed;
+}
+
+th,td,p{
+    font-size: clamp(1rem, 3vh, 50px);
+}
+
+h2 {
+    font-size: clamp(1rem, 3vh, 50px);
 }
 
 th,
