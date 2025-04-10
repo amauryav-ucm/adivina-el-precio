@@ -112,7 +112,7 @@ body {
 /* tablet breakpoint */
 @media (orientation: landscape) {
     .lobby {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: max(400px, 25vw) 1fr 1fr;
         grid-template-rows: auto 1fr auto;
         grid-template-areas:
             'header header header'
