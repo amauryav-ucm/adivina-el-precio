@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
         if (lobbies[obj.lobbyCode].active === true) return;
         lobbies[obj.lobbyCode].active = true;
         game(obj.lobbyCode, obj.totalRounds, obj.guessTime);
-        io.to(_room).emit('update-players', {
+        io.to(obj.lobbyCode).emit('update-players', {
             players: lobbies[_room].players,
         });
     });
