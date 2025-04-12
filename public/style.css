@@ -1,4 +1,7 @@
 /* Main stuff */
+:root {
+    font-size: clamp(1rem, 3vh, 50px);
+}
 
 html {
     font-family: 'Inter', sans-serif;
@@ -49,7 +52,7 @@ body {
 .main-page > .footer {
     grid-area: footer;
     background: rgba(255, 255, 255, 0.05);
-    color: rgba(0,0,0,0);
+    color: rgba(0, 0, 0, 0);
 }
 
 .main-page > .main-content > div,
@@ -106,7 +109,7 @@ body {
 .lobby > .footer {
     grid-area: footer;
     background: rgba(255, 255, 255, 0.05);
-    color: rgba(0,0,0,0);
+    color: rgba(0, 0, 0, 0);
 }
 
 /* tablet breakpoint */
@@ -157,19 +160,22 @@ body {
 
 button,
 input {
+    font-family: 'Inter', sans-serif;
     background-color: #2a2a40;
     border: 1px solid #444;
     color: #fff;
     padding: 10px 16px;
     border-radius: 8px;
-    margin: 10px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     outline: none;
     transition: background-color 0.2s ease;
 }
 
-label, input, button {
+label,
+input,
+button {
     font-size: clamp(1rem, 3vh, 60px);
-    
 }
 
 h1 {
@@ -192,15 +198,14 @@ input[type='number'] {
     text-align: right;
 }
 
-
 p {
     margin: 5px 0;
     font-size: 18px;
 }
 
-.product-container-image img{
+.product-container-image img {
     width: 100%;
-    max-width: 400px; /* Cap the size at 400px */ 
+    max-width: 400px; /* Cap the size at 400px */
     border-radius: 12px;
     box-shadow: 0 0 10px #00000088;
 }
@@ -210,7 +215,9 @@ table {
     table-layout: fixed;
 }
 
-th,td,p{
+th,
+td,
+p {
     font-size: clamp(1rem, 3vh, 50px);
 }
 
@@ -220,7 +227,7 @@ h2 {
 
 th,
 td {
-    padding: 8px;
+    padding-top: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -245,13 +252,13 @@ th {
     border-radius: 7px;
     background: linear-gradient(to bottom, green, #090);
     animation: roundtime calc(var(--duration) * 1ms) linear forwards;
-  transform-origin: left center;
-  width: 100%;
-  }
+    transform-origin: left center;
+    width: 100%;
+}
 
-  @keyframes roundtime {
+@keyframes roundtime {
     to {
-      /* More performant than animating `width` */
-      width: 0%;
+        /* More performant than animating `width` */
+        width: 0%;
     }
-  }
+}
